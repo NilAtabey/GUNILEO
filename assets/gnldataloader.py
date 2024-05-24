@@ -3,7 +3,7 @@ import pandas as pd
 from torchvision.io import read_image
 from torch.utils.data import Dataset
 
-class DataLoader(Dataset):
+class GNLDataLoader(Dataset):
     def __init__(self, labels_path: str, images_dir: str, transform = None) -> None:
         """
         Creates a dataset given the path to the labels and the image directory
