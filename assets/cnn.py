@@ -8,8 +8,7 @@ class LabialCNN(nn.Module):
     def __init__(self):
         super().__init__()
         self.cnn = nn.Sequential(
-            nn.Conv2d(1, 5, 3), # 1 is the input (because it's a gray-scale image),
-                                # 5 is the output, 3 is the kernel size
+            nn.Conv2d(1, 5, 3),
             nn.ReLU(),
             nn.Conv2d(5, 10, 3),
             nn.ReLU()
