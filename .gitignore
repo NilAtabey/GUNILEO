@@ -1,1 +1,21 @@
-/__pycache__
+# For Python
+assets/__pycache__
+
+# For macOs
+.DS_Store
+
+# For .ipynb
+*.ipynb.swap
+
+# For LaTeX
+*.aux
+*.log
+*.nav
+*.out
+*.snm
+*.toc
+*.vrb
+*.fdb_latexmk
+*.fls
+*.synctex.gz
+*.blg
