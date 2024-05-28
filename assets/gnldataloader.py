@@ -20,7 +20,7 @@ class GNLDataLoader(Dataset):
         """
         super().__init__()
         self.data_dir, self.labels_dir = os.listdir(data_path).sort(), os.listdir(labels_path).sort()
-        print(self.data_dir, self.labels_dir, sep="\n\n")
+
         self.transform = transform
 
         self.face_detector = dlib.get_frontal_face_detector()
