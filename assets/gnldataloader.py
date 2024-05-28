@@ -1,10 +1,8 @@
 import os
-import pandas as pd 
 import dlib
 import cv2
 import numpy as np
 import torch
-from torchvision.io import read_image
 from torch.utils.data import Dataset
 from torchnlp.encoders import LabelEncoder
 
