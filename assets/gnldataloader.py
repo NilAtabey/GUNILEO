@@ -9,6 +9,14 @@ from torch.utils.data import Dataset
 from torchnlp.encoders import LabelEncoder
 
 class GNLDataLoader(Dataset):
+    """Creates a dataloader for the Lipsync Project"""
+    face_detector = dlib.get_frontal_face_detector()
+    landmark = dlib.shape_predictor("shape_predictor_68_face_landmarks_GTX.dat")
+
+    alphabet = [x for x in "abcdefghijklmnopqrstuvwxyz0123456789 "]
+    encoder = LabelEncoder(alphabet, reserved_labels=['unknown'], unknown_index=0)
+    CROPMARGIN = 20
+
     def __init__(self, labels_path: str, data_path: str, transform = None) -> None:
         """
         Creates a dataset given the path to the labels and the image directory
@@ -22,54 +30,50 @@ class GNLDataLoader(Dataset):
         self.data_dir, self.labels_dir = os.listdir(data_path).sort(), os.listdir(labels_path).sort()
 
         self.transform = transform
-
-        self.face_detector = dlib.get_frontal_face_detector()
-        self.landmark = dlib.shape_predictor("shape_predictor_68_face_landmarks_GTX.dat")
-
-        self.alphabet = [x for x in "abcdefghijklmnopqrstuvwxyz0123456789 "]
-        self.encoder = LabelEncoder(self.alphabet, reserved_labels=['unknown'], unknown_index=0)
-        self.CROPMARGIN = 20
+        
 
     def __len__(self) -> int:
-        """Returns the length of the data folder
+        """
+        Returns the length of the data/labels folder
         
         Returns:
-            - `length` (`int`): the length of the data folder"""
+            - `length` (`int`): the length of the data/labels folder
+        """
         return len(self.data_dir)
+    
 
     def __getitem__(self, index: int) -> tuple[torch.Tensor, torch.Tensor]:
-        """Get the ith item(s) in the dataset
+        """
+        Get the ith item(s) in the dataset
         
         Parameters:
             - `index`: the index of the image that must be retrieven.
             
         Returns:
-            - `item` (`img`): the image in the ith position in the dataset."""
+            - (`item`, `label`) (`tuple[torch.Tensor, torch.Tensor]`): the item in the ith position in the dataset, along with its label.
+        """
         
         # Get the label + data
         label_path, data_path = self.labels_dir[index], self.data_dir[index]
+        return (self.__load_video__(data_path, debug=False), self.__load_label__(label_path))
 
-        # Apply transformations (if any)
-        if self.transform:
-            image = self.transform(image)
+
+    def __load_video__(self, video_path: str, debug=False) -> torch.Tensor:
+        """
+        Loads a video from the dataset given its path
         
-        print(self.data_dir, self.labels_dir, sep="\n\n")
-
-        print(data_path, label_path, sep="\n\n")
-
-        vid = self.videoload(data_path)
-        label = self.alignload(label_path)
-        return (vid, label)
-
-
-                        # This is data path
-    def videoload(self, path, debug=False):
-        """Docs"""
-        cap = cv2.VideoCapture(path)
-        print(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+        Parameters:
+            - `video_path`: the path of the video that must be loaded
+            
+        Returns:
+            - `video` (`torch.Tensor`): the video as a PyTorch's `Tensor`
+        """
+        cap = cv2.VideoCapture(video_path)
+        if debug: print(cap.get(cv2.CAP_PROP_FRAME_COUNT))
         to_return = []
+
         for _ in range(int(cap.get(cv2.CAP_PROP_FRAME_COUNT))):
-            ret,frame = cap.read()
+            ret, frame = cap.read()
             gframe = cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
             
             facedetect = self.face_detector(gframe)
@@ -96,21 +100,28 @@ class GNLDataLoader(Dataset):
         return np.array(to_return)
     
 
-    def alignload(self, path, debug=False):
+    def __load_label__(self, label_path: str, debug=False) -> torch.Tensor:
+        """
+        Loads a label from the dataset given its path
+
+        Parameters:
+            - `label_path`: the path of the label that must be loaded;
+
+        Returns:
+            - `label` (`torch.Tensor`): the label as a PyTorch's tensor
+        """
         encoding =[ {"b":"bin","l":"lay","p":"place","s":"set"},
                     {"b":"blue","g":"green","r":"red","w":"white"},
                     {"a":"at","b":"by","i":"in","w":"with"},
                     "letter",
                     {"0":"zero","1":"one","2":"two","3":"three","4":"four","5":"five","6":"six","7":"seven","8":"eight","9":"nine"},
                     {"a":"again","n":"now","p":"please","s":"soon"}]
-        code = path.split(".")[0].split("_")[-1]
+        
+        code = label_path.split(".")[0].split("_")[-1]
         sentence = []
         for i, letter in enumerate(code):
             corresponding_dict = encoding[i]
-            next =""
-            if corresponding_dict == "letter":
-                next = letter
-            else:next = corresponding_dict[letter]
+            next = letter if corresponding_dict == "letter" else corresponding_dict[letter]
             sentence = sentence + [" "] + [x for x in next]
     
 
