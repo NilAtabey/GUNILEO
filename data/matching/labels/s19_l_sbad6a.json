@@ -1,0 +1,109 @@
+{
+	"s19_l_sbad6a": [
+		{
+			"duration": 0.03,
+			"offset": 0,
+			"phone": "SIL_S"
+		},
+		{
+			"duration": 0.04,
+			"offset": 0.03,
+			"phone": "s_B"
+		},
+		{
+			"duration": 0.1,
+			"offset": 0.07,
+			"phone": "eh_I"
+		},
+		{
+			"duration": 0.08,
+			"offset": 0.17,
+			"phone": "t_E"
+		},
+		{
+			"duration": 0.13,
+			"offset": 0.25,
+			"phone": "SIL"
+		},
+		{
+			"duration": 0.07,
+			"offset": 0.38,
+			"phone": "b_B"
+		},
+		{
+			"duration": 0.08,
+			"offset": 0.45,
+			"phone": "l_I"
+		},
+		{
+			"duration": 0.1,
+			"offset": 0.53,
+			"phone": "uw_E"
+		},
+		{
+			"duration": 0.18,
+			"offset": 0.63,
+			"phone": "ae_B"
+		},
+		{
+			"duration": 0.08,
+			"offset": 0.81,
+			"phone": "t_E"
+		},
+		{
+			"duration": 0.16,
+			"offset": 0.89,
+			"phone": "d_B"
+		},
+		{
+			"duration": 0.13,
+			"offset": 1.05,
+			"phone": "iy_E"
+		},
+		{
+			"duration": 0.2,
+			"offset": 1.18,
+			"phone": "s_B"
+		},
+		{
+			"duration": 0.08,
+			"offset": 1.38,
+			"phone": "ih_I"
+		},
+		{
+			"duration": 0.16,
+			"offset": 1.46,
+			"phone": "k_I"
+		},
+		{
+			"duration": 0.09,
+			"offset": 1.62,
+			"phone": "s_E"
+		},
+		{
+			"duration": 0.08,
+			"offset": 1.71,
+			"phone": "ax_B"
+		},
+		{
+			"duration": 0.06,
+			"offset": 1.79,
+			"phone": "g_I"
+		},
+		{
+			"duration": 0.18,
+			"offset": 1.85,
+			"phone": "eh_I"
+		},
+		{
+			"duration": 0.22,
+			"offset": 2.03,
+			"phone": "n_E"
+		},
+		{
+			"duration": 0.14,
+			"offset": 2.25,
+			"phone": "SIL_S"
+		}
+	]
+}
