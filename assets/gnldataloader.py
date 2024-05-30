@@ -5,6 +5,9 @@ import numpy as np
 import torch
 from torch.utils.data import Dataset
 from torchnlp.encoders import LabelEncoder
+import test
+
+debug_dl = True
 
 class GNLDataLoader(Dataset):
     """Creates a dataloader for the Lipsync Project"""
@@ -15,7 +18,7 @@ class GNLDataLoader(Dataset):
     encoder = LabelEncoder(alphabet, reserved_labels=['unknown'], unknown_index=0)
     CROPMARGIN = 20
 
-    def __init__(self, labels_path: str, data_path: str, transform = None) -> None:
+    def __init__(self, labels_path: str, data_path: str, transform = None, debug: bool = False) -> None:
         """
         Creates a dataset given the path to the labels and the image directory
 
@@ -25,8 +28,13 @@ class GNLDataLoader(Dataset):
             - `transform`: states whether a transformation should be applied to the images or not.
         """
         super().__init__()
-        self.data_dir, self.labels_dir = os.listdir(data_path).sort(), os.listdir(labels_path).sort()
+        self.debug = debug
 
+        if self.debug:
+            print(f"[DEBUG] The data dir has{' ' if os.path.isdir(data_path) else ' not '}been recognized")
+            print(f"[DEBUG] The label dir has{' ' if os.path.isdir(labels_path) else 'not'}been recognized")
+
+        self.data_dir, self.labels_dir = sorted(os.listdir(data_path)), sorted(os.listdir(labels_path))
         self.transform = transform
         
 
@@ -53,10 +61,10 @@ class GNLDataLoader(Dataset):
         
         # Get the label + data
         label_path, data_path = self.labels_dir[index], self.data_dir[index]
-        return (self.__load_video__(data_path, debug=False), self.__load_label__(label_path))
+        return (self.__load_video__(data_path), self.__load_label__(label_path))
 
 
-    def __load_video__(self, video_path: str, debug=False) -> torch.Tensor:
+    def __load_video__(self, video_path: str) -> torch.Tensor:
         """
         Loads a video from the dataset given its path
         
@@ -67,7 +75,9 @@ class GNLDataLoader(Dataset):
             - `video` (`torch.Tensor`): the video as a PyTorch's `Tensor`
         """
         cap = cv2.VideoCapture(video_path)
-        if debug: print(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+        if self.debug:
+            #print(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+            print(f"[DEBUG] Trying to open the video at path {video_path}")
         to_return = []
 
         for _ in range(int(cap.get(cv2.CAP_PROP_FRAME_COUNT))):
@@ -98,7 +108,7 @@ class GNLDataLoader(Dataset):
         return np.array(to_return)
     
 
-    def __load_label__(self, label_path: str, debug=False) -> torch.Tensor:
+    def __load_label__(self, label_path: str) -> torch.Tensor:
         """
         Loads a label from the dataset given its path
 
@@ -122,4 +132,8 @@ class GNLDataLoader(Dataset):
             next = letter if corresponding_dict == "letter" else corresponding_dict[letter]
             sentence = sentence + [" "] + [x for x in next]
         enl = self.encoder.batch_encode(sentence)
+        if self.debug: print(enl)
         return enl
+
+if __name__ == "__main__" and debug_dl == True:
+    test.main()
