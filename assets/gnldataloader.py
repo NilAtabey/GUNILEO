@@ -32,7 +32,7 @@ class GNLDataLoader(Dataset):
 
         if self.debug:
             print(f"[DEBUG] The data dir has{' ' if os.path.isdir(data_path) else ' not '}been recognized")
-            print(f"[DEBUG] The label dir has{' ' if os.path.isdir(labels_path) else 'not'}been recognized")
+            print(f"[DEBUG] The label dir has{' ' if os.path.isdir(labels_path) else ' not '}been recognized")
 
         self.data_dir, self.labels_dir = sorted(os.listdir(data_path)), sorted(os.listdir(labels_path))
         self.transform = transform
