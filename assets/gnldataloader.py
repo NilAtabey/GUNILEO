@@ -121,7 +121,5 @@ class GNLDataLoader(Dataset):
             corresponding_dict = encoding[i]
             next = letter if corresponding_dict == "letter" else corresponding_dict[letter]
             sentence = sentence + [" "] + [x for x in next]
-    
-
         enl = self.encoder.batch_encode(sentence)
         return enl
