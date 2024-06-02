@@ -5,6 +5,7 @@ import numpy as np
 import torch
 from torch.utils.data import Dataset
 from torchnlp.encoders import LabelEncoder
+
 import test
 
 debug_dl = True
@@ -28,12 +29,13 @@ class GNLDataLoader(Dataset):
             - `transform`: states whether a transformation should be applied to the images or not.
         """
         super().__init__()
-        self.debug = debug
+        self.debug: bool = debug
 
         if self.debug:
             print(f"[DEBUG] The data dir has{' ' if os.path.isdir(data_path) else ' not '}been recognized")
             print(f"[DEBUG] The label dir has{' ' if os.path.isdir(labels_path) else ' not '}been recognized")
 
+        self.data_path, self.labels_path = data_path, labels_path
         self.data_dir, self.labels_dir = sorted(os.listdir(data_path)), sorted(os.listdir(labels_path))
         self.transform = transform
         
@@ -58,10 +60,16 @@ class GNLDataLoader(Dataset):
         Returns:
             - (`item`, `label`) (`tuple[torch.Tensor, torch.Tensor]`): the item in the ith position in the dataset, along with its label.
         """
-        
-        # Get the label + data
-        label_path, data_path = self.labels_dir[index], self.data_dir[index]
-        return (self.__load_video__(data_path), self.__load_label__(label_path))
+
+        if self.debug:
+            print(f"[DEBUG] Index of the dataloader: {index}")
+            print(f"[DEBUG] Data folder: {self.data_dir[index]}")
+            print(f"[DEBUG] Labels folder: {self.labels_dir[index]}")
+
+        return (
+            [self.__load_video__(data_piece) for data_piece in self.data_dir[index]],
+            [self.__load_label__(label_piece) for label_piece in self.labels_dir[index]]
+        )
 
 
     def __load_video__(self, video_path: str) -> torch.Tensor:
@@ -74,6 +82,7 @@ class GNLDataLoader(Dataset):
         Returns:
             - `video` (`torch.Tensor`): the video as a PyTorch's `Tensor`
         """
+        video_path = os.path.join(self.data_path, video_path)
         cap = cv2.VideoCapture(video_path)
         if self.debug:
             #print(cap.get(cv2.CAP_PROP_FRAME_COUNT))
