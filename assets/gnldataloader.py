@@ -67,6 +67,7 @@ class GNLDataLoader(Dataset):
             print(f"[DEBUG] Labels folder: {self.labels_dir[index]}")
 
         self.data_dir[index] = [self.data_dir[index]] if type(self.data_dir[index]) != list else self.data_dir[index]
+        self.labels_dir[index] = [self.labels_dir[index]] if type(self.labels_dir[index]) != list else self.labels_dir[index]
 
         return (
             [self.__load_video__(data_piece) for data_piece in self.data_dir[index]],
@@ -116,20 +117,25 @@ class GNLDataLoader(Dataset):
 
 
             face_landmarks = self.landmark(gframe, facedetect[0])
-            xleft = face_landmarks.part(48).x -self.CROPMARGIN
-            xright = face_landmarks.part(54).x +self.CROPMARGIN
-            ybottom = face_landmarks.part(57).y +self.CROPMARGIN
-            ytop = face_landmarks.part(50).y -self.CROPMARGIN
+            xleft = face_landmarks.part(48).x - self.CROPMARGIN
+            xright = face_landmarks.part(54).x + self.CROPMARGIN
+            ybottom = face_landmarks.part(57).y + self.CROPMARGIN
+            ytop = face_landmarks.part(50).y - self.CROPMARGIN
 
-            mouth = gframe[ytop:ybottom,xleft:xright]
-            mouth = cv2.resize(mouth,(150,100))
+            mouth = gframe[ytop:ybottom, xleft:xright]
+            mouth = cv2.resize(mouth, (150, 100))
             
             mean = np.mean(mouth)
             std_dev = np.std(mouth)
             mouth = (mouth - mean) / std_dev
-                
+
             to_return.append(torch.tensor(mouth))
         cap.release()
+
+        if len(to_return) < 75:
+            for _ in range(75 - len(to_return)):
+                to_return.append(np.zeros((150, 100)))
+
         return np.array(to_return)
     
 
