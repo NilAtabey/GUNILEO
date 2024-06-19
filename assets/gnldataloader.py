@@ -50,7 +50,7 @@ class GNLDataLoader(Dataset):
         return len(self.data_dir)
     
 
-    def __getitem__(self, index: int) -> tuple[torch.Tensor, torch.Tensor]:
+    def __getitem__(self, index: int, straight: bool = False) -> tuple[torch.Tensor, torch.Tensor]:
         """
         Get the ith item(s) in the dataset
         
@@ -89,15 +89,23 @@ class GNLDataLoader(Dataset):
             print(f"[DEBUG] Trying to open the video at path {video_path}")
         to_return = []
 
+        homog, prev_frame = True, None
+
         for _ in range(int(cap.get(cv2.CAP_PROP_FRAME_COUNT))):
             ret, frame = cap.read()
             gframe = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)# .astype('uint8')  # Format to 8-bit image. 'int8' doesn't seem to do the job either
 
-            '''if self.debug:
+            if self.debug:
+                '''
                 cv2.imshow("Frame", gframe)
                 cv2.waitKey(0)
-                cv2.destroyAllWindows()'''
-            cv2.imwrite("/workspace/GUNILEO/tests/gframe001.jpg", gframe)
+                cv2.destroyAllWindows()
+                cv2.imwrite("/workspace/GUNILEO/tests/gframe001.jpg", gframe)'''
+                
+                prev_frame = frame.shape if prev_frame == None else prev_frame
+                homog = False if prev_frame != frame.shape else True
+                print(frame.shape, homog)
+                
 
             facedetect = self.face_detector(gframe)
             
