@@ -90,11 +90,11 @@ class GNLDataLoader(Dataset):
         if self.debug:
             #print(cap.get(cv2.CAP_PROP_FRAME_COUNT))
             print(f"[DEBUG] Trying to open the video at path {video_path}")
-        to_return = []
+        to_return = np.ndarray(shape =(75,100,150))
 
         homog, prev_frame = True, None
 
-        for _ in range(int(cap.get(cv2.CAP_PROP_FRAME_COUNT))):
+        for i in range(int(cap.get(cv2.CAP_PROP_FRAME_COUNT))):
             ret, frame = cap.read()
             gframe = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)# .astype('uint8')  # Format to 8-bit image. 'int8' doesn't seem to do the job either
 
@@ -105,9 +105,9 @@ class GNLDataLoader(Dataset):
                 cv2.destroyAllWindows()
                 cv2.imwrite("/workspace/GUNILEO/tests/gframe001.jpg", gframe)'''
                 
-                prev_frame = frame.shape if prev_frame == None else prev_frame
-                homog = False if prev_frame != frame.shape else True
-                print(frame.shape, homog)
+                prev_frame = gframe.shape if prev_frame == None else prev_frame
+                homog = False if prev_frame != gframe.shape else True
+                print(gframe.shape, homog)
                 
 
             facedetect = self.face_detector(gframe)
@@ -128,15 +128,12 @@ class GNLDataLoader(Dataset):
             mean = np.mean(mouth)
             std_dev = np.std(mouth)
             mouth = (mouth - mean) / std_dev
-
-            to_return.append(torch.tensor(mouth))
+            to_return[i]=torch.tensor(mouth)
+            
         cap.release()
 
-        if len(to_return) < 75:
-            for _ in range(75 - len(to_return)):
-                to_return.append(np.zeros((150, 100)))
-
-        return np.array(to_return)
+        print(to_return.shape)
+        return to_return
     
 
     def __load_label__(self, label_path: str) -> torch.Tensor:
