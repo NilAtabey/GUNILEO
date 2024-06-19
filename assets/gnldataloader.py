@@ -93,10 +93,11 @@ class GNLDataLoader(Dataset):
             ret, frame = cap.read()
             gframe = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)# .astype('uint8')  # Format to 8-bit image. 'int8' doesn't seem to do the job either
 
-            if self.debug:
+            '''if self.debug:
                 cv2.imshow("Frame", gframe)
                 cv2.waitKey(0)
-                cv2.destroyAllWindows()
+                cv2.destroyAllWindows()'''
+            cv2.imwrite("/workspace/GUNILEO/tests/gframe001.jpg", gframe)
 
             facedetect = self.face_detector(gframe)
             
