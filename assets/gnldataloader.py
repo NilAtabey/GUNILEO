@@ -66,6 +66,8 @@ class GNLDataLoader(Dataset):
             print(f"[DEBUG] Data folder: {self.data_dir[index]}")
             print(f"[DEBUG] Labels folder: {self.labels_dir[index]}")
 
+        self.data_dir[index] = [self.data_dir[index]] if type(self.data_dir[index]) != list else self.data_dir[index]
+
         return (
             [self.__load_video__(data_piece) for data_piece in self.data_dir[index]],
             [self.__load_label__(label_piece) for label_piece in self.labels_dir[index]]
