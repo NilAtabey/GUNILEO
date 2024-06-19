@@ -91,9 +91,12 @@ class GNLDataLoader(Dataset):
 
         for _ in range(int(cap.get(cv2.CAP_PROP_FRAME_COUNT))):
             ret, frame = cap.read()
-            gframe = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            gframe = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)# .astype('uint8')  # Format to 8-bit image. 'int8' doesn't seem to do the job either
 
-            cv2.imshow("Frame", gframe)
+            if self.debug:
+                cv2.imshow("Frame", gframe)
+                cv2.waitKey(0)
+                cv2.destroyAllWindows()
 
             facedetect = self.face_detector(gframe)
             
@@ -147,4 +150,4 @@ class GNLDataLoader(Dataset):
         return enl
 
 if __name__ == "__main__" and debug_dl == True:
-    test.main()
+    test.main(user = 1)
