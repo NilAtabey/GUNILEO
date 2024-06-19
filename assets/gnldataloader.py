@@ -131,8 +131,6 @@ class GNLDataLoader(Dataset):
             to_return[i]=torch.tensor(mouth)
             
         cap.release()
-
-        print(to_return.shape)
         return to_return
     
 
