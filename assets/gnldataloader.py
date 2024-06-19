@@ -91,8 +91,10 @@ class GNLDataLoader(Dataset):
 
         for _ in range(int(cap.get(cv2.CAP_PROP_FRAME_COUNT))):
             ret, frame = cap.read()
-            gframe = cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
-            
+            gframe = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
+            cv2.imshow("Frame", gframe)
+
             facedetect = self.face_detector(gframe)
             
             #HAVE A CHECK IF THE FACE IS FOUND OR NOT

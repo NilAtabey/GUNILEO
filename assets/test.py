@@ -7,7 +7,7 @@ def main():
 
     dataLoader = GNLDataLoader(path_labels, path_data, transform=None, debug=True)
 
-    print(dataLoader[1:10:2])
+    print(dataLoader[1:3])
 
 if __name__ == "__main__":
     main()
