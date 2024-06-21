@@ -19,7 +19,7 @@ class GNLDataLoader(Dataset):
     encoder = LabelEncoder(alphabet, reserved_labels=['unknown'], unknown_index=0)
     CROPMARGIN = 20
 
-    def __init__(self, labels_path: str, data_path: str, transform = None, debug: bool = False) -> None:
+    def __init__(self, labels_path: str, data_path: str, transform = None, train_test_percent: int = 75, debug: bool = False) -> None:
         """
         Creates a dataset given the path to the labels and the image directory
 
@@ -160,6 +160,18 @@ class GNLDataLoader(Dataset):
         enl = self.encoder.batch_encode(sentence)
         if self.debug: print(enl)
         return enl
+    
+    """
+    def training(self, batch_size: int = 32):
+
+        self[0:]
+
+
+        return None
+
+    def testing(self):
+        return None
+    """
 
 if __name__ == "__main__" and debug_dl == True:
     test.main(user = 1)
