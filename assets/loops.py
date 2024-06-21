@@ -2,6 +2,7 @@ import torchmetrics
 import torch
 
 metric = torchmetrics.Accuracy(task="multiclass", num_classes=37)
+batch_size = 16
 
 def train_loop(device, dataloader, model, loss_fn, optimizer, epochs, epoch=None, debug=True):
     """Trains an epoch of the model
@@ -15,28 +16,38 @@ def train_loop(device, dataloader, model, loss_fn, optimizer, epochs, epoch=None
         - `epoch`: the index of the epoch
     """
     size = len(dataloader)
-
+    
     # Get the batch from the dataset
-    for batch, (x, y) in enumerate(dataloader):
-        # Move data to the device used
+    for batch, (x,y) in enumerate(dataloader):
+        print(x)
+        print(x.shape)
+        print(y)
+        print(y.shape)
         x = x.to(device)
         y = y.to(device)
+        
+        
+        
+        # Move data to the device used
+           
 
-        # Compute the prediction and the loss
+            # Compute the prediction and the loss
         pred = model(x)
         loss = loss_fn(pred, y)
+        total_acc = metric(pred, y)
 
         # Adjust the weights
-        loss.backward()
+        mean_loss = total_loss//batch_size
+        avg_acc=total_acc//batch_size
+        mean_loss.backward()
         optimizer.step()
         optimizer.zero_grad()
-
+        
         # Print some information
-        if batch % 32 == 0:
-            loss_value, current_batch = loss.item(), (batch + 1) * len(x)
-            if debug: print(f"→ Loss: {loss_value} [Batch {current_batch}/{size}, Epoch {epoch}/{epochs}]")
-            accuracy = metric(pred, y)
-            if debug: print(f"Accuracy of batch {current_batch}/{size}: {accuracy}")
+        
+        if debug: print(f"→ Loss: {mean_loss} [Batch {batch}/{size}, Epoch {epoch}/{epochs}]")
+        
+        if debug: print(f"Accuracy of batch {batch}/{size}: {avg_acc}")
         
     accuracy = metric.compute()
     print(f"=== The epoch {epoch}/{epochs} has finished training ===")

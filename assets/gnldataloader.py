@@ -128,10 +128,11 @@ class GNLDataLoader(Dataset):
             mean = np.mean(mouth)
             std_dev = np.std(mouth)
             mouth = (mouth - mean) / std_dev
-            to_return[i] = torch.tensor(mouth)
+            to_return[i] = mouth
             
         cap.release()
-        return to_return
+        
+        return torch.tensor(to_return)
     
 
     def __load_label__(self, label_path: str) -> torch.Tensor:
@@ -155,7 +156,7 @@ class GNLDataLoader(Dataset):
             ]
         
         code = label_path.split(".")[0].split("_")[-1]
-        print(code)
+        
         sentence = []
         for i, letter in enumerate(code):
             corresponding_dict = encoding[i]
