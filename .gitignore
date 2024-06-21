@@ -19,3 +19,8 @@ __pycache__
 *.fls
 *.synctex.gz
 *.blg
+
+# Tests
+waves_yesno
+waves_yesno.*
+tests

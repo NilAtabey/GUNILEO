@@ -50,7 +50,7 @@ class GNLDataLoader(Dataset):
         return len(self.data_dir)
     
 
-    def __getitem__(self, index: int, straight: bool = False) -> tuple[torch.Tensor, torch.Tensor]:
+    def __getitem__(self, index: int, straight: bool = False) -> tuple[torch.Tensor, list[str]]:
         """
         Get the ith item(s) in the dataset
         
@@ -66,13 +66,22 @@ class GNLDataLoader(Dataset):
             print(f"[DEBUG] Data folder: {self.data_dir[index]}")
             print(f"[DEBUG] Labels folder: {self.labels_dir[index]}")
 
-        self.data_dir[index] = [self.data_dir[index]] if type(self.data_dir[index]) != list else self.data_dir[index]
-        self.labels_dir[index] = [self.labels_dir[index]] if type(self.labels_dir[index]) != list else self.labels_dir[index]
+        datas = [self.data_dir[index]] if type(self.data_dir[index]) != list else self.data_dir[index]
+        labels = [self.labels_dir[index]] if type(self.labels_dir[index]) != list else self.labels_dir[index]
 
-        return (
-            [self.__load_video__(data_piece) for data_piece in self.data_dir[index]],
-            [self.__load_label__(label_piece) for label_piece in self.labels_dir[index]]
-        )
+        to_return = []
+
+        for ind, item in enumerate(datas):
+            to_return.append((self.__load_video__(item), self.__load_label__(labels[ind])))
+
+
+        '''return (
+            [self.__load_video__(data_piece) for data_piece in datas],
+            [self.__load_label__(label_piece) for label_piece in labels]
+        )'''
+
+        return tuple(to_return)
+            
 
 
     def __load_video__(self, video_path: str) -> torch.Tensor:
@@ -92,22 +101,22 @@ class GNLDataLoader(Dataset):
             print(f"[DEBUG] Trying to open the video at path {video_path}")
         to_return = np.ndarray(shape =(75,100,150))
 
-        homog, prev_frame = True, None
+        # homog, prev_frame = True, None
 
         for i in range(int(cap.get(cv2.CAP_PROP_FRAME_COUNT))):
-            ret, frame = cap.read()
+            _, frame = cap.read()
             gframe = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)# .astype('uint8')  # Format to 8-bit image. 'int8' doesn't seem to do the job either
 
-            if self.debug:
-                '''
+            '''if self.debug:
+                
                 cv2.imshow("Frame", gframe)
                 cv2.waitKey(0)
                 cv2.destroyAllWindows()
-                cv2.imwrite("/workspace/GUNILEO/tests/gframe001.jpg", gframe)'''
+                cv2.imwrite("/workspace/GUNILEO/tests/gframe001.jpg", gframe)
                 
                 prev_frame = gframe.shape if prev_frame == None else prev_frame
                 homog = False if prev_frame != gframe.shape else True
-                print(gframe.shape, homog)
+                print(gframe.shape, homog)'''
                 
 
             facedetect = self.face_detector(gframe)
@@ -131,6 +140,7 @@ class GNLDataLoader(Dataset):
             to_return[i] = mouth
             
         cap.release()
+        if self.debug: print(f"[DEBUG] Video {video_path} opened")
         
         return torch.tensor(to_return)
     
@@ -163,5 +173,5 @@ class GNLDataLoader(Dataset):
             next = letter if corresponding_dict == "letter" else corresponding_dict[letter]
             sentence = sentence + [" "] + [x for x in next]
         enl = self.encoder.batch_encode(sentence)
-        if self.debug: print(enl)
+        if self.debug: print(f"Label: {enl}\nSentence: {sentence}")
         return enl

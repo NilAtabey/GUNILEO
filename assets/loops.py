@@ -2,7 +2,7 @@ import torchmetrics
 import torch
 
 metric = torchmetrics.Accuracy(task="multiclass", num_classes=37)
-batch_size = 16
+batch_size = 8
 
 def train_loop(device, dataloader, model, loss_fn, optimizer, epochs, epoch=None, debug=True):
     """Trains an epoch of the model
