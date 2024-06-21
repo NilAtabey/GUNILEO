@@ -1,4 +1,6 @@
 import torchmetrics
+import torch
+
 metric = torchmetrics.Accuracy(task="multiclass", num_classes=37)
 
 def train_loop(device, dataloader, model, loss_fn, optimizer, epochs, epoch=None, debug=True):
@@ -41,7 +43,7 @@ def train_loop(device, dataloader, model, loss_fn, optimizer, epochs, epoch=None
     if debug: print(f"→ Final accuracy of the epoch: {accuracy}")
     metric.reset()
 
-def test_loop(dataloader, model, loss_fn, debug=True):
+def test_loop(device, dataloader, model, loss_fn, debug=True):
     size = len(dataloader)
 
     # Disable the updating of the weights
