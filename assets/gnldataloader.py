@@ -144,14 +144,16 @@ class GNLDataLoader(Dataset):
         Returns:
             - `label` (`torch.Tensor`): the label as a PyTorch's tensor
         """
+        
         encoding =[ {"b":"bin","l":"lay","p":"place","s":"set"},
                     {"b":"blue","g":"green","r":"red","w":"white"},
                     {"a":"at","b":"by","i":"in","w":"with"},
                     "letter",
-                    {"0":"zero","1":"one","2":"two","3":"three","4":"four","5":"five","6":"six","7":"seven","8":"eight","9":"nine"},
+                    {"z":"zero","1":"one","2":"two","3":"three","4":"four","5":"five","6":"six","7":"seven","8":"eight","9":"nine"},
                     {"a":"again","n":"now","p":"please","s":"soon"}]
         
         code = label_path.split(".")[0].split("_")[-1]
+        print(code)
         sentence = []
         for i, letter in enumerate(code):
             corresponding_dict = encoding[i]
