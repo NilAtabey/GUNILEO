@@ -128,7 +128,7 @@ class GNLDataLoader(Dataset):
             mean = np.mean(mouth)
             std_dev = np.std(mouth)
             mouth = (mouth - mean) / std_dev
-            to_return[i]=torch.tensor(mouth)
+            to_return[i] = torch.tensor(mouth)
             
         cap.release()
         return to_return
@@ -145,12 +145,14 @@ class GNLDataLoader(Dataset):
             - `label` (`torch.Tensor`): the label as a PyTorch's tensor
         """
         
-        encoding =[ {"b":"bin","l":"lay","p":"place","s":"set"},
-                    {"b":"blue","g":"green","r":"red","w":"white"},
-                    {"a":"at","b":"by","i":"in","w":"with"},
-                    "letter",
-                    {"z":"zero","1":"one","2":"two","3":"three","4":"four","5":"five","6":"six","7":"seven","8":"eight","9":"nine"},
-                    {"a":"again","n":"now","p":"please","s":"soon"}]
+        encoding = [
+            {"b":"bin","l":"lay","p":"place","s":"set"},
+            {"b":"blue","g":"green","r":"red","w":"white"},
+            {"a":"at","b":"by","i":"in","w":"with"},
+            "letter",
+            {"z":"zero","1":"one","2":"two","3":"three","4":"four","5":"five","6":"six","7":"seven","8":"eight","9":"nine"},
+            {"a":"again","n":"now","p":"please","s":"soon"}
+            ]
         
         code = label_path.split(".")[0].split("_")[-1]
         print(code)
@@ -162,18 +164,3 @@ class GNLDataLoader(Dataset):
         enl = self.encoder.batch_encode(sentence)
         if self.debug: print(enl)
         return enl
-    
-    """
-    def training(self, batch_size: int = 32):
-
-        self[0:]
-
-
-        return None
-
-    def testing(self):
-        return None
-    """
-
-if __name__ == "__main__" and debug_dl == True:
-    test.main(user = 1)

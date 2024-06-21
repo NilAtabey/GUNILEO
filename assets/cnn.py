@@ -17,7 +17,6 @@ class LabialCNN(nn.Module):
 
         self.debug = debug
         self.cnn = nn.Sequential(
-          
             nn.Conv3d(in_channels=1,out_channels=8,kernel_size=(3, 5, 5),padding=(1, 2, 2),stride=(1, 2, 2)),
             nn.ReLU(),
             nn.MaxPool3d(kernel_size=(1, 2, 2),stride=(1, 2, 2)),
@@ -38,28 +37,19 @@ class LabialCNN(nn.Module):
             
             nn.Linear(in_features=512,out_features= 37),
             nn.Softmax()
-             
-            
-           
-            
         )
 
     # Remember to put FALSE
     def forward(self, x):
         x = self.cnn(x) # Run through the model
         
-        sh=x.shape
-        x = torch.reshape(x,(sh[1],sh[0],sh[2],sh[3])) #Reshape so that the channels are flattened, not frames
-        x= nn.Flatten()(x)
+        sh = x.shape
+        x = torch.reshape(x,(sh[1],sh[0],sh[2],sh[3])) # Reshape so that the channels are flattened, not frames
+        x = nn.Flatten()(x)
         x = self.gru(x)
       
         
-        if self.debug: print(f"  Layer's shape: a")
+        if self.debug: print(f"Layer's shape: {sh}")
         #x = torch.flatten(x, 1)     # Flatten layer
         #if debug: print(f"  Layer's shape: {x.shape}")
         if self.debug: print(f"Summary of the layer: a")
-
-model = LabialCNN(False)
-
-#torchinfo.summary(model, (1,75, 100, 150), col_names = ("input_size", "output_size", "num_params", "kernel_size", "mult_adds"), verbose = 1)
-#torchinfo.summary(model.gru, (75, 1728), col_names = ("input_size", "output_size", "num_params", "kernel_size", "mult_adds"), verbose = 1)
