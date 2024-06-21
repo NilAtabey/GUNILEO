@@ -1,0 +1,119 @@
+{
+	"s52_p_pgis5s": [
+		{
+			"duration": 0.14,
+			"offset": 0,
+			"phone": "SIL_S"
+		},
+		{
+			"duration": 0.07,
+			"offset": 0.14,
+			"phone": "p_B"
+		},
+		{
+			"duration": 0.06,
+			"offset": 0.21,
+			"phone": "l_I"
+		},
+		{
+			"duration": 0.06,
+			"offset": 0.27,
+			"phone": "ey_I"
+		},
+		{
+			"duration": 0.05,
+			"offset": 0.33,
+			"phone": "s_E"
+		},
+		{
+			"duration": 0.04,
+			"offset": 0.38,
+			"phone": "g_B"
+		},
+		{
+			"duration": 0.15,
+			"offset": 0.42,
+			"phone": "r_I"
+		},
+		{
+			"duration": 0.09,
+			"offset": 0.57,
+			"phone": "iy_I"
+		},
+		{
+			"duration": 0.12,
+			"offset": 0.66,
+			"phone": "n_E"
+		},
+		{
+			"duration": 0.03,
+			"offset": 0.78,
+			"phone": "SIL"
+		},
+		{
+			"duration": 0.12,
+			"offset": 0.81,
+			"phone": "ih_B"
+		},
+		{
+			"duration": 0.13,
+			"offset": 0.93,
+			"phone": "n_E"
+		},
+		{
+			"duration": 0.03,
+			"offset": 1.06,
+			"phone": "SIL"
+		},
+		{
+			"duration": 0.11,
+			"offset": 1.09,
+			"phone": "eh_B"
+		},
+		{
+			"duration": 0.19,
+			"offset": 1.2,
+			"phone": "s_E"
+		},
+		{
+			"duration": 0.2,
+			"offset": 1.39,
+			"phone": "SIL"
+		},
+		{
+			"duration": 0.16,
+			"offset": 1.59,
+			"phone": "f_B"
+		},
+		{
+			"duration": 0.11,
+			"offset": 1.75,
+			"phone": "ay_I"
+		},
+		{
+			"duration": 0.09,
+			"offset": 1.86,
+			"phone": "v_E"
+		},
+		{
+			"duration": 0.12,
+			"offset": 1.95,
+			"phone": "s_B"
+		},
+		{
+			"duration": 0.14,
+			"offset": 2.07,
+			"phone": "uw_I"
+		},
+		{
+			"duration": 0.15,
+			"offset": 2.21,
+			"phone": "n_E"
+		},
+		{
+			"duration": 0.12,
+			"offset": 2.36,
+			"phone": "SIL_S"
+		}
+	]
+}
