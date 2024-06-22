@@ -29,15 +29,14 @@ def train_loop(device, dataloader, model, loss_fn, optimizer, epochs, epoch=None
 
             # Compute the prediction and the loss
             pred = model(video)
-
             preds.append(pred)
-            tar_lens = torch.randint(low=21, high=33, size=(batch_size, ), dtype=torch.long)    # torch.tensor(size=(batch_size, ), dtype=torch.long)
+            #tar_lens = torch.randint(low=21, high=33, size=(batch_size, ), dtype=torch.long)    # torch.tensor(size=(batch_size, ), dtype=torch.long)
             #loss = loss_fn(pred, label, (75), (33))
 
-            print(video, video.shape, pred, pred.shape, label, label.shape, sep=2*"\n")
+            if debug: print(video, video.shape, pred, pred.shape, label, label.shape, sep=2*"\n")
             total_acc = metric(pred, label)
 
-        loss = loss_fn(torch.tensor(preds), torch.tensor(y), torch.full(size=(batch_size, ), fill_value=75, dtype=torch.long), torch.full(size=(batch_size, ), fill_value=33, dtype=torch.long)) # torch.tensor(size=(33, ), dtype=torch.long)
+        loss = loss_fn(torch.tensor(preds), torch.tensor(y), torch.full(size=(batch_size, ), fill_value=75, dtype=torch.long), torch.full(size=(batch_size, ), fill_value=37, dtype=torch.long)) # torch.tensor(size=(33, ), dtype=torch.long)
         # Adjust the weights
         # mean_loss = total_loss//batch_size
         # avg_acc=total_acc//batch_size

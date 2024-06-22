@@ -32,10 +32,10 @@ class LabialCNN(nn.Module):
             
         )    
         self.gru = nn.Sequential(
-            nn.GRU(input_size= 1728, hidden_size= 256, num_layers=2, dropout=0.5 ,bidirectional=True),
+            nn.GRU(input_size=1728, hidden_size=256, num_layers=2, dropout=0.5, bidirectional=True),
             SelectItem(0),
-            
-            nn.Linear(in_features=512, out_features= 37),
+
+            nn.Linear(in_features=512, out_features=37),
             nn.Softmax()
         )
 

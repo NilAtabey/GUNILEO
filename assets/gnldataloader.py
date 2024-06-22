@@ -176,7 +176,7 @@ class GNLDataLoader(Dataset):
             sentence = sentence + [" "] + [x for x in next]
             
         # Adapting the labels to be all of equal size
-        for i in range(33 - len(sentence)):
+        for i in range(37 - len(sentence)):
             sentence.append(" ")
 
         enl = self.encoder.batch_encode(sentence)
