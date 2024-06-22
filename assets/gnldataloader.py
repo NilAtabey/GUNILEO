@@ -172,6 +172,11 @@ class GNLDataLoader(Dataset):
             corresponding_dict = encoding[i]
             next = letter if corresponding_dict == "letter" else corresponding_dict[letter]
             sentence = sentence + [" "] + [x for x in next]
+            
+        # Adapting the labels to be all of equal size
+        for i in range(33 - len(sentence)):
+            sentence.append(" ")
+
         enl = self.encoder.batch_encode(sentence)
-        if self.debug: print(f"Label: {enl}\nSentence: {sentence}")
+        if self.debug: print(f"[DEBUG] Label: {enl}\n[DEBUG] Sentence: {sentence}\n[DEBUG] Length: {len(sentence)}\n")
         return enl

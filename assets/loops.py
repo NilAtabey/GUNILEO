@@ -19,35 +19,26 @@ def train_loop(device, dataloader, model, loss_fn, optimizer, epochs, epoch=None
     
     # Get the batch from the dataset
     for batch, (x,y) in enumerate(dataloader):
-        print(x)
-        print(x.shape)
-        print(y)
-        print(y.shape)
-        x = x.to(device)
-        y = y.to(device)
-        
-        
-        
         # Move data to the device used
+        x = x.to(device)
+        y = y.to(device)        
            
-
-            # Compute the prediction and the loss
+        # Compute the prediction and the loss
         pred = model(x)
         loss = loss_fn(pred, y)
         total_acc = metric(pred, y)
 
         # Adjust the weights
-        mean_loss = total_loss//batch_size
-        avg_acc=total_acc//batch_size
-        mean_loss.backward()
+        # mean_loss = total_loss//batch_size
+        # avg_acc=total_acc//batch_size
+        loss.backward()
         optimizer.step()
         optimizer.zero_grad()
         
         # Print some information
         
-        if debug: print(f"→ Loss: {mean_loss} [Batch {batch}/{size}, Epoch {epoch}/{epochs}]")
-        
-        if debug: print(f"Accuracy of batch {batch}/{size}: {avg_acc}")
+        if debug: print(f"→ Loss: {loss} [Batch {batch}/{size}, Epoch {epoch}/{epochs}]")
+        if debug: print(f"Accuracy of batch {batch}/{size}: {total_acc}")
         
     accuracy = metric.compute()
     print(f"=== The epoch {epoch}/{epochs} has finished training ===")
