@@ -20,17 +20,24 @@ def train_loop(device, dataloader, model, loss_fn, optimizer, epochs, epoch=None
     
     # Get the batch from the dataset
     for batch, (x,y) in enumerate(dataloader):
+        target_lengths = [i for i in y]
+        preds = []
         for index, video in enumerate(x):
             # Move data to the device used
             video = video.to(device)
-            label = y[index].to(device)        
-            
+            label = y[index].to(device)
+
             # Compute the prediction and the loss
             pred = model(video)
-            loss = loss_fn(pred, label, (batch_size), (33))
-        
+
+            preds.append(pred)
+            tar_lens = torch.randint(low=21, high=33, size=(batch_size, ), dtype=torch.long)    # torch.tensor(size=(batch_size, ), dtype=torch.long)
+            #loss = loss_fn(pred, label, (75), (33))
+
+            print(video, video.shape, pred, pred.shape, label, label.shape, sep=2*"\n")
             total_acc = metric(pred, label)
 
+        loss = loss_fn(torch.tensor(preds), torch.tensor(y), torch.full(size=(batch_size, ), fill_value=75, dtype=torch.long), torch.full(size=(batch_size, ), fill_value=33, dtype=torch.long)) # torch.tensor(size=(33, ), dtype=torch.long)
         # Adjust the weights
         # mean_loss = total_loss//batch_size
         # avg_acc=total_acc//batch_size

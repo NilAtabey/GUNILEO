@@ -53,3 +53,5 @@ class LabialCNN(nn.Module):
         #x = torch.flatten(x, 1)     # Flatten layer
         #if debug: print(f"  Layer's shape: {x.shape}")
         if self.debug: print(f"Summary of the layer: a")
+
+        return x
