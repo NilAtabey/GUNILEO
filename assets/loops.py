@@ -1,5 +1,6 @@
 import torchmetrics
 import torch
+from torch import nn
 
 metric = torchmetrics.Accuracy(task="multiclass", num_classes=37)
 batch_size = 8
@@ -19,14 +20,16 @@ def train_loop(device, dataloader, model, loss_fn, optimizer, epochs, epoch=None
     
     # Get the batch from the dataset
     for batch, (x,y) in enumerate(dataloader):
-        # Move data to the device used
-        x = x.to(device)
-        y = y.to(device)        
-           
-        # Compute the prediction and the loss
-        pred = model(x)
-        loss = loss_fn(pred, y)
-        total_acc = metric(pred, y)
+        for index, video in enumerate(x):
+            # Move data to the device used
+            video = video.to(device)
+            label = y[index].to(device)        
+            
+            # Compute the prediction and the loss
+            pred = model(video)
+            loss = loss_fn(pred, label, (batch_size), (33))
+        
+            total_acc = metric(pred, label)
 
         # Adjust the weights
         # mean_loss = total_loss//batch_size

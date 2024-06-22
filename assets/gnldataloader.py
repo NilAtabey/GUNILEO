@@ -140,9 +140,11 @@ class GNLDataLoader(Dataset):
             to_return[i] = mouth
             
         cap.release()
-        if self.debug: print(f"[DEBUG] Video {video_path} opened")
+        if self.debug:
+            print(f"[DEBUG] Video {video_path} opened")
+            print(f"[DEBUG] Shape of video: {to_return.shape}")
         
-        return torch.tensor(to_return)
+        return torch.tensor([to_return], dtype=torch.float32)
     
 
     def __load_label__(self, label_path: str) -> torch.Tensor:
@@ -178,5 +180,6 @@ class GNLDataLoader(Dataset):
             sentence.append(" ")
 
         enl = self.encoder.batch_encode(sentence)
+        enl = enl.type(torch.FloatTensor)
         if self.debug: print(f"[DEBUG] Label: {enl}\n[DEBUG] Sentence: {sentence}\n[DEBUG] Length: {len(sentence)}\n")
         return enl
