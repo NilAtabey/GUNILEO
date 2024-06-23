@@ -121,21 +121,22 @@ class GNLDataLoader(Dataset):
             
             #HAVE A CHECK IF THE FACE IS FOUND OR NOT
 
+            try:
+                face_landmarks = self.landmark(gframe, facedetect[0])
+                xleft = face_landmarks.part(48).x - self.CROPMARGIN
+                xright = face_landmarks.part(54).x + self.CROPMARGIN
+                ybottom = face_landmarks.part(57).y + self.CROPMARGIN
+                ytop = face_landmarks.part(50).y - self.CROPMARGIN
 
-
-            face_landmarks = self.landmark(gframe, facedetect[0])
-            xleft = face_landmarks.part(48).x - self.CROPMARGIN
-            xright = face_landmarks.part(54).x + self.CROPMARGIN
-            ybottom = face_landmarks.part(57).y + self.CROPMARGIN
-            ytop = face_landmarks.part(50).y - self.CROPMARGIN
-
-            mouth = gframe[ytop:ybottom, xleft:xright]
-            mouth = cv2.resize(mouth, (150, 100))
-            
-            mean = np.mean(mouth)
-            std_dev = np.std(mouth)
-            mouth = (mouth - mean) / std_dev
-            to_return[i] = mouth
+                mouth = gframe[ytop:ybottom, xleft:xright]
+                mouth = cv2.resize(mouth, (150, 100))
+                
+                mean = np.mean(mouth)
+                std_dev = np.std(mouth)
+                mouth = (mouth - mean) / std_dev
+                to_return[i] = mouth
+            except IndexError:
+                to_return[i] = np.zeros((100, 150))
             
         cap.release()
         if self.debug:
