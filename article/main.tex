@@ -12,6 +12,7 @@
 \usepackage{makecell}
 \usepackage[dvipsnames]{xcolor}
 \usepackage{tikz}
+\usepackage{lipsum}
 
 \hypersetup{
     colorlinks=true,
@@ -29,11 +30,35 @@
 
 }
 
-\title{Lipsync}
+\title{GuNiLeo: Lip Reading From Videos with STCNN}
 \author{Beray Nil Atabey (\textit{2045576}) \quad Leonardo Biason (\textit{2045751}) \quad Günak Yuzak (\textit{2048950})}
 
 \begin{document}
 
 \maketitle
+
+\begin{abstract}
+    Lip reading is a task that can have various usages as an accessibility feature, but it's also very complex to design: it requires a machine to be able to differentiate between the various words said by a speaker, and also to predict what the speaker said whenever words aren't spelled with a precise motion of the lips. With this paper, we propose a model based on a Spatio-Temporal CNN, capable of reading the words said by a speaker from a video clip of maximum 75 frames.
+\end{abstract}
+
+\section{Introduction}
+
+\lipsum[1]
+
+\section{Implementation}
+
+In order to create a lip reading model, the following steps have been undertaken:
+\begin{itemize}
+    \item [1)] creation and modeling of the dataset;
+    \item [2)] creation of the model;
+    \item [3)] training of the model;
+    \item [4)] evaluation of the model.
+\end{itemize}
+
+\subsection{Creation and Modeling of the Dataset}
+
+A dataset for such task 
+
+The dataset comprehends two fundamental parts: the data part and the labels. Since the project aims to recognise the movement of the lips, the data part is composed of multiple clips, of different length, of human speakers saying some words while focusing the video on their lips. The labels contain the phonetic representation of the words said by the speaker. 
 
 \end{document}
