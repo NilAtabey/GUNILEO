@@ -6,8 +6,6 @@ import torch
 from torch.utils.data import Dataset
 from torchnlp.encoders import LabelEncoder
 
-import test
-
 debug_dl = True
 
 class GNLDataLoader(Dataset):
