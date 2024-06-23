@@ -19,9 +19,8 @@ def train_loop(device, dataloader, model, loss_fn, optimizer, epochs, epoch=None
     size = len(dataloader)
     
     # Get the batch from the dataset
-    for batch, (x,y) in enumerate(dataloader):
-        target_lengths = [i for i in y]
-        preds = []
+    for batch, (x, y) in enumerate(dataloader):
+        predictions = []
         for index, video in enumerate(x):
             # Move data to the device used
             video = video.to(device)
@@ -29,14 +28,30 @@ def train_loop(device, dataloader, model, loss_fn, optimizer, epochs, epoch=None
 
             # Compute the prediction and the loss
             pred = model(video)
-            preds.append(pred)
-            #tar_lens = torch.randint(low=21, high=33, size=(batch_size, ), dtype=torch.long)    # torch.tensor(size=(batch_size, ), dtype=torch.long)
-            #loss = loss_fn(pred, label, (75), (33))
+            predictions.append(pred)
 
-            if debug: print(video, video.shape, pred, pred.shape, label, label.shape, sep=2*"\n")
-            total_acc = metric(pred, label)
+            # if debug: print(video, video.shape, pred, pred.shape, label, label.shape, sep="\n\n========================================================\n\n")
+            # total_acc = metric(pred, label)
 
-        loss = loss_fn(torch.tensor(preds), torch.tensor(y), torch.full(size=(batch_size, ), fill_value=75, dtype=torch.long), torch.full(size=(batch_size, ), fill_value=37, dtype=torch.long)) # torch.tensor(size=(33, ), dtype=torch.long)
+        predictions = torch.stack(predictions)
+        preds_shape = predictions.shape
+        predictions = torch.reshape(predictions, (preds_shape[1], preds_shape[0], preds_shape[2]))
+
+        """print(
+            f"Predictions:\n{predictions}\n\nSize of predictions: {preds_shape}",
+            f"Labels:\n{y}\n\nLabels shape: {y.shape}",
+            f"Input size:\n{torch.full(size=(batch_size, ), fill_value=75, dtype=torch.long)}",
+            f"Labels size:\n{torch.full(size=(batch_size, ), fill_value=37, dtype=torch.long)}",
+            sep="\n\n===============================================\n\n"
+        )"""
+
+        loss = loss_fn(
+            predictions,
+            y,
+            torch.full(size=(batch_size, ), fill_value=75, dtype=torch.long),
+            torch.full(size=(batch_size, ), fill_value=37, dtype=torch.long)
+        )
+
         # Adjust the weights
         # mean_loss = total_loss//batch_size
         # avg_acc=total_acc//batch_size
@@ -46,13 +61,32 @@ def train_loop(device, dataloader, model, loss_fn, optimizer, epochs, epoch=None
         
         # Print some information
         
-        if debug: print(f"→ Loss: {loss} [Batch {batch}/{size}, Epoch {epoch}/{epochs}]")
-        if debug: print(f"Accuracy of batch {batch}/{size}: {total_acc}")
+        if debug: print(f"→ Loss: {loss} [Batch {batch + 1}/{size}, Epoch {epoch + 1}/{epochs}]")
+        # if debug: print(f"Accuracy of batch {batch}/{size}: {GNLAccuracy(predictions, y)}")
         
-    accuracy = metric.compute()
-    print(f"=== The epoch {epoch}/{epochs} has finished training ===")
-    if debug: print(f"→ Final accuracy of the epoch: {accuracy}")
-    metric.reset()
+    #accuracy = metric.compute()
+    print(f"===     The epoch {epoch + 1}/{epochs} has finished training     ===")
+    #if debug: print(f"→ Final accuracy of the epoch: {accuracy}")
+    #metric.reset()
+
+
+def GNLAccuracy(preds, labels) -> float:
+    alphabet = [x for x in "abcdefghijklmnopqrstuvwxyz0123456789 "]
+    total = 0
+    for index, video in enumerate(preds):
+        correct = 0
+        pred_label = []
+        label = [i for i in labels[index] if i != " "]
+        for frame in video:
+            letter = alphabet[torch.argmax(frame)]
+            if letter != " ": pred_label.append(letter)
+        
+        for i, c in enumerate(pred_label):
+            if c == label[i]:
+                correct += 1
+        total += correct / len(pred_label)
+    return total / batch_size
+
 
 def test_loop(device, dataloader, model, loss_fn, debug=True):
     size = len(dataloader)
@@ -60,17 +94,18 @@ def test_loop(device, dataloader, model, loss_fn, debug=True):
     # Disable the updating of the weights
     with torch.no_grad():
         for index, (x, y) in enumerate(dataloader):
+            for index, video in enumerate(x):
             # Move the data to the device used for testing
-            x = x.to(device)
-            y = y.to(device)
+                video = video.to(device)
+                label = y[index].to(device)
 
-            # Get the model prediction
-            pred = model(x)
+                # Get the model prediction
+                pred = model(video)
 
-            # Get the accuracy score
-            acc = metric(pred, y)
-            if debug: print(f"→ Accuracy for image {index}: {acc}")
-    acc = metric.compute()
-    print(f"===    The testing loop has finished    ===")
-    if debug: print(f"→ Final testing accuracy of the model: {acc}")
-    metric.reset()
+                # Get the accuracy score
+                # acc = metric(pred, label)
+                # if debug: print(f"→ Accuracy for image {index}: {acc}")
+    # acc = metric.compute()
+    print(f"===        The testing loop has finished        ===")
+    # if debug: print(f"→ Final testing accuracy of the model: {acc}")
+    # metric.reset()
