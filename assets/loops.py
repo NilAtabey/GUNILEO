@@ -17,52 +17,53 @@ def train_loop(device, dataloader, model, loss_fn, optimizer, epochs, epoch=None
         - `epoch`: the index of the epoch
     """
     size = len(dataloader)
+    predictions = []
     
-    # Get the batch from the dataset
-    for batch, (x, y) in enumerate(dataloader):
-        predictions = []
-        for index, video in enumerate(x):
+    # Get the item from the dataset
+    for item, (x, y) in enumerate(dataloader):
+        print(f"{x} -> {x.shape}")
+        #for index, video in enumerate(x):
             # Move data to the device used
-            video = video.to(device)
-            label = y[index].to(device)
+        video = x.to(device)
+        label = y.to(device)
 
-            # Compute the prediction and the loss
-            pred = model(video)
-            predictions.append(pred)
+        # Compute the prediction and the loss
+        pred = model(video)
+        predictions.append(pred)
 
             # if debug: print(video, video.shape, pred, pred.shape, label, label.shape, sep="\n\n========================================================\n\n")
             # total_acc = metric(pred, label)
 
-        predictions = torch.stack(predictions)
-        preds_shape = predictions.shape
-        predictions = torch.reshape(predictions, (preds_shape[1], preds_shape[0], preds_shape[2]))
+    predictions = torch.stack(predictions)
+    preds_shape = predictions.shape
+    predictions = torch.reshape(predictions, (preds_shape[1], preds_shape[0], preds_shape[2]))
 
-        """print(
-            f"Predictions:\n{predictions}\n\nSize of predictions: {preds_shape}",
-            f"Labels:\n{y}\n\nLabels shape: {y.shape}",
-            f"Input size:\n{torch.full(size=(batch_size, ), fill_value=75, dtype=torch.long)}",
-            f"Labels size:\n{torch.full(size=(batch_size, ), fill_value=37, dtype=torch.long)}",
-            sep="\n\n===============================================\n\n"
-        )"""
+    """print(
+        f"Predictions:\n{predictions}\n\nSize of predictions: {preds_shape}",
+        f"Labels:\n{y}\n\nLabels shape: {y.shape}",
+        f"Input size:\n{torch.full(size=(batch_size, ), fill_value=75, dtype=torch.long)}",
+        f"Labels size:\n{torch.full(size=(batch_size, ), fill_value=37, dtype=torch.long)}",
+        sep="\n\n===============================================\n\n"
+    )"""
 
-        loss = loss_fn(
-            predictions,
-            y,
-            torch.full(size=(batch_size, ), fill_value=75, dtype=torch.long),
-            torch.full(size=(batch_size, ), fill_value=37, dtype=torch.long)
-        )
+    loss = loss_fn(
+        predictions,
+        y,
+        torch.full(size=(batch_size, ), fill_value=75, dtype=torch.long),
+        torch.full(size=(batch_size, ), fill_value=37, dtype=torch.long)
+    )
 
-        # Adjust the weights
-        # mean_loss = total_loss//batch_size
-        # avg_acc=total_acc//batch_size
-        loss.backward()
-        optimizer.step()
-        optimizer.zero_grad()
-        
-        # Print some information
-        
-        if debug: print(f"→ Loss: {loss} [Batch {batch + 1}/{size}, Epoch {epoch + 1}/{epochs}]")
-        # if debug: print(f"Accuracy of batch {batch}/{size}: {GNLAccuracy(predictions, y)}")
+    # Adjust the weights
+    # mean_loss = total_loss//batch_size
+    # avg_acc=total_acc//batch_size
+    loss.backward()
+    optimizer.step()
+    optimizer.zero_grad()
+    
+    # Print some information
+    
+    if debug: print(f"→ Loss: {loss} [Item {item + 1}/{size}, Epoch {epoch + 1}/{epochs}]")
+    # if debug: print(f"Accuracy of item {item}/{size}: {GNLAccuracy(predictions, y)}")
         
     #accuracy = metric.compute()
     print(f"===     The epoch {epoch + 1}/{epochs} has finished training     ===")

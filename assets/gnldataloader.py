@@ -78,8 +78,8 @@ class GNLDataLoader(Dataset):
             [self.__load_label__(label_piece) for label_piece in labels]
         )'''
 
-        return tuple(to_return)
-            
+        print(f"{len(to_return)}")
+        return tuple(to_return)  
 
 
     def __load_video__(self, video_path: str) -> torch.Tensor:
@@ -103,8 +103,7 @@ class GNLDataLoader(Dataset):
 
         for i in range(int(cap.get(cv2.CAP_PROP_FRAME_COUNT))):
             _, frame = cap.read()
-            gframe = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)# .astype('uint8')  # Format to 8-bit image. 'int8' doesn't seem to do the job either
-
+            gframe = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY).astype('uint8')  # Format to 8-bit image. 'int8' doesn't seem to do the job either
             '''if self.debug:
                 
                 cv2.imshow("Frame", gframe)
@@ -115,7 +114,6 @@ class GNLDataLoader(Dataset):
                 prev_frame = gframe.shape if prev_frame == None else prev_frame
                 homog = False if prev_frame != gframe.shape else True
                 print(gframe.shape, homog)'''
-                
 
             facedetect = self.face_detector(gframe)
             
@@ -143,7 +141,9 @@ class GNLDataLoader(Dataset):
             print(f"[DEBUG] Video {video_path} opened")
             print(f"[DEBUG] Shape of video: {to_return.shape}")
         
-        return torch.tensor([to_return], dtype=torch.float32)
+        to_return = np.array(to_return)
+
+        return torch.tensor(to_return, dtype=torch.float32)
     
 
     def __load_label__(self, label_path: str) -> torch.Tensor:

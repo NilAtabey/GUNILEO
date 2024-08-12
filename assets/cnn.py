@@ -9,8 +9,8 @@ class SelectItem(nn.Module):
         self.item_index = item_index
 
     def forward(self, inputs):
-        
         return inputs[self.item_index]
+    
 class LabialCNN(nn.Module):
     def __init__(self, debug: bool = False):
         super().__init__()
