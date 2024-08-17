@@ -78,7 +78,7 @@ class GNLDataLoader(Dataset):
             [self.__load_label__(label_piece) for label_piece in labels]
         )'''
 
-        print(f"{len(to_return)}")
+        # print(f"{len(to_return)}")
         return tuple(to_return)
 
 
@@ -92,6 +92,7 @@ class GNLDataLoader(Dataset):
         Returns:
             - `video` (`torch.Tensor`): the video as a PyTorch's `Tensor`
         """
+        label_name = video_path[:-3] + "json"
         video_path = os.path.join(self.data_path, video_path)
         cap = cv2.VideoCapture(video_path)
         if self.debug:
@@ -134,9 +135,12 @@ class GNLDataLoader(Dataset):
                 mouth = (mouth - mean) / std_dev
                 to_return[i] = mouth
             except IndexError:
+                # naughty_boys.add(video_path)
+                # naughty_labels.add("data/matching/labels/" + label_name)
                 to_return[i] = np.zeros((100, 150))
 
         cap.release()
+
         if self.debug:
             print(f"[DEBUG] Video {video_path} opened")
             print(f"[DEBUG] Shape of video: {to_return.shape}")

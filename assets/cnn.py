@@ -35,7 +35,7 @@ class LabialCNN(nn.Module):
             nn.GRU(input_size=1728, hidden_size=256, num_layers=2, dropout=0.5, bidirectional=True),
             SelectItem(0),
 
-            nn.Linear(in_features=512, out_features=37),
+            nn.Linear(in_features=512, out_features=38),
             nn.Softmax()
         )
 

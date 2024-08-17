@@ -2,7 +2,7 @@ import torchmetrics
 import torch
 from torch import nn
 
-metric = torchmetrics.Accuracy(task="multiclass", num_classes=37)
+# metric = torchmetrics.Accuracy(task="multiclass", num_classes=38)
 batch_size = 8
 
 def train_loop(device, dataloader, model, loss_fn, optimizer, epochs, epoch=None, debug=True):
@@ -36,14 +36,16 @@ def train_loop(device, dataloader, model, loss_fn, optimizer, epochs, epoch=None
             # if debug: print(video, video.shape, pred, pred.shape, label, label.shape, sep="\n\n========================================================\n\n")
             # total_acc = metric(pred, label)
 
-        #print(f"[DEBUG] Preds: {pred.shape}\nLabel: {label.shape}")
+        if debug: print(f"[DEBUG] Preds: {pred.shape}\n[DEBUG] Label: {label.shape}")
 
 
         loss = loss_fn(
             pred,
             label,
-            torch.full(size=(1, ), fill_value=75, dtype=torch.long),   # torch.Size([32])
-            torch.full(size=(1, ), fill_value=37, dtype=torch.long)    # torch.Size([32])
+            [75],
+            label.shape
+            #torch.full(size=(1, ), fill_value=75, dtype=torch.long),   # torch.Size([32])
+            #torch.full(size=(1, ), fill_value=37, dtype=torch.long)    # torch.Size([32])
         )
 
         # Adjust the weights
@@ -78,7 +80,7 @@ def train_loop(device, dataloader, model, loss_fn, optimizer, epochs, epoch=None
     # if debug: print(f"Accuracy of item {item}/{size}: {GNLAccuracy(predictions, y)}")
 
     #accuracy = metric.compute()
-    print(f"===     The epoch {epoch + 1}/{epochs} has finished training     ===")
+    print(f"===     The batch {epoch + 1}/{epochs} has finished training     ===")
     #if debug: print(f"→ Final accuracy of the epoch: {accuracy}")
     #metric.reset()
 
