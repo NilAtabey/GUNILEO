@@ -36,25 +36,25 @@ class GNLDataLoader(Dataset):
         self.data_path, self.labels_path = data_path, labels_path
         self.data_dir, self.labels_dir = sorted(os.listdir(data_path)), sorted(os.listdir(labels_path))
         self.transform = transform
-        
+
 
     def __len__(self) -> int:
         """
         Returns the length of the data/labels folder
-        
+
         Returns:
             - `length` (`int`): the length of the data/labels folder
         """
         return len(self.data_dir)
-    
+
 
     def __getitem__(self, index: int, straight: bool = False) -> tuple[torch.Tensor, list[str]]:
         """
         Get the ith item(s) in the dataset
-        
+
         Parameters:
             - `index`: the index of the image that must be retrieven.
-            
+
         Returns:
             - (`item`, `label`) (`tuple[torch.Tensor, torch.Tensor]`): the item in the ith position in the dataset, along with its label.
         """
@@ -79,16 +79,16 @@ class GNLDataLoader(Dataset):
         )'''
 
         print(f"{len(to_return)}")
-        return tuple(to_return)  
+        return tuple(to_return)
 
 
     def __load_video__(self, video_path: str) -> torch.Tensor:
         """
         Loads a video from the dataset given its path
-        
+
         Parameters:
             - `video_path`: the path of the video that must be loaded
-            
+
         Returns:
             - `video` (`torch.Tensor`): the video as a PyTorch's `Tensor`
         """
@@ -105,18 +105,18 @@ class GNLDataLoader(Dataset):
             _, frame = cap.read()
             gframe = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY).astype('uint8')  # Format to 8-bit image. 'int8' doesn't seem to do the job either
             '''if self.debug:
-                
+
                 cv2.imshow("Frame", gframe)
                 cv2.waitKey(0)
                 cv2.destroyAllWindows()
                 cv2.imwrite("/workspace/GUNILEO/tests/gframe001.jpg", gframe)
-                
+
                 prev_frame = gframe.shape if prev_frame == None else prev_frame
                 homog = False if prev_frame != gframe.shape else True
                 print(gframe.shape, homog)'''
 
             facedetect = self.face_detector(gframe)
-            
+
             #HAVE A CHECK IF THE FACE IS FOUND OR NOT
 
             try:
@@ -128,23 +128,23 @@ class GNLDataLoader(Dataset):
 
                 mouth = gframe[ytop:ybottom, xleft:xright]
                 mouth = cv2.resize(mouth, (150, 100))
-                
+
                 mean = np.mean(mouth)
                 std_dev = np.std(mouth)
                 mouth = (mouth - mean) / std_dev
                 to_return[i] = mouth
             except IndexError:
                 to_return[i] = np.zeros((100, 150))
-            
+
         cap.release()
         if self.debug:
             print(f"[DEBUG] Video {video_path} opened")
             print(f"[DEBUG] Shape of video: {to_return.shape}")
-        
-        to_return = np.array(to_return)
+
+        to_return = np.array([to_return])
 
         return torch.tensor(to_return, dtype=torch.float32)
-    
+
 
     def __load_label__(self, label_path: str) -> torch.Tensor:
         """
@@ -156,7 +156,7 @@ class GNLDataLoader(Dataset):
         Returns:
             - `label` (`torch.Tensor`): the label as a PyTorch's tensor
         """
-        
+
         encoding = [
             {"b":"bin","l":"lay","p":"place","s":"set"},
             {"b":"blue","g":"green","r":"red","w":"white"},
@@ -165,15 +165,15 @@ class GNLDataLoader(Dataset):
             {"z":"zero","1":"one","2":"two","3":"three","4":"four","5":"five","6":"six","7":"seven","8":"eight","9":"nine"},
             {"a":"again","n":"now","p":"please","s":"soon"}
             ]
-        
+
         code = label_path.split(".")[0].split("_")[-1]
-        
+
         sentence = []
         for i, letter in enumerate(code):
             corresponding_dict = encoding[i]
             next = letter if corresponding_dict == "letter" else corresponding_dict[letter]
             sentence = sentence + [" "] + [x for x in next]
-            
+
         # Adapting the labels to be all of equal size
         for i in range(37 - len(sentence)):
             sentence.append(" ")

@@ -7,7 +7,7 @@ batch_size = 8
 
 def train_loop(device, dataloader, model, loss_fn, optimizer, epochs, epoch=None, debug=True):
     """Trains an epoch of the model
-    
+
     Parameters:
         - `device`: destination device
         - `dataloader`: the dataloader of the dataset
@@ -18,10 +18,11 @@ def train_loop(device, dataloader, model, loss_fn, optimizer, epochs, epoch=None
     """
     size = len(dataloader)
     predictions = []
-    
+    labels = []
+
     # Get the item from the dataset
     for item, (x, y) in enumerate(dataloader):
-        print(f"{x} -> {x.shape}")
+        #print(f"{x} -> {x.shape}")
         #for index, video in enumerate(x):
             # Move data to the device used
         video = x.to(device)
@@ -30,41 +31,52 @@ def train_loop(device, dataloader, model, loss_fn, optimizer, epochs, epoch=None
         # Compute the prediction and the loss
         pred = model(video)
         predictions.append(pred)
+        labels.append(label)
 
             # if debug: print(video, video.shape, pred, pred.shape, label, label.shape, sep="\n\n========================================================\n\n")
             # total_acc = metric(pred, label)
 
-    predictions = torch.stack(predictions)
+        #print(f"[DEBUG] Preds: {pred.shape}\nLabel: {label.shape}")
+
+
+        loss = loss_fn(
+            pred,
+            label,
+            torch.full(size=(1, ), fill_value=75, dtype=torch.long),   # torch.Size([32])
+            torch.full(size=(1, ), fill_value=37, dtype=torch.long)    # torch.Size([32])
+        )
+
+        # Adjust the weights
+        # mean_loss = total_loss//batch_size
+        # avg_acc=total_acc//batch_size
+        loss.backward()
+        optimizer.step()
+        optimizer.zero_grad()
+
+        if debug: print(f"→ Loss: {loss} [Item {item + 1}/{size}, Epoch {epoch + 1}/{epochs}]")
+
+    """predictions = torch.stack(predictions)
+    labels = torch.stack(labels)
     preds_shape = predictions.shape
+    labels_shape = labels.shape
     predictions = torch.reshape(predictions, (preds_shape[1], preds_shape[0], preds_shape[2]))
+    """
 
-    """print(
-        f"Predictions:\n{predictions}\n\nSize of predictions: {preds_shape}",
-        f"Labels:\n{y}\n\nLabels shape: {y.shape}",
-        f"Input size:\n{torch.full(size=(batch_size, ), fill_value=75, dtype=torch.long)}",
-        f"Labels size:\n{torch.full(size=(batch_size, ), fill_value=37, dtype=torch.long)}",
-        sep="\n\n===============================================\n\n"
-    )"""
-
-    loss = loss_fn(
-        predictions,
-        y,
-        torch.full(size=(batch_size, ), fill_value=75, dtype=torch.long),
-        torch.full(size=(batch_size, ), fill_value=37, dtype=torch.long)
+    """
+    print(
+    f"Predictions:\n{predictions}\n\nSize of predictions: {preds_shape}",
+    f"Labels:\n{y}\n\nLabels shape: {y.shape}",
+    f"Input size:\n{torch.full(size=(batch_size, ), fill_value=75, dtype=torch.long)}",
+    f"Labels size:\n{torch.full(size=(batch_size, ), fill_value=37, dtype=torch.long)}",
+    sep="\n\n===============================================\n\n"
     )
+    """
 
-    # Adjust the weights
-    # mean_loss = total_loss//batch_size
-    # avg_acc=total_acc//batch_size
-    loss.backward()
-    optimizer.step()
-    optimizer.zero_grad()
-    
+
     # Print some information
-    
-    if debug: print(f"→ Loss: {loss} [Item {item + 1}/{size}, Epoch {epoch + 1}/{epochs}]")
+
     # if debug: print(f"Accuracy of item {item}/{size}: {GNLAccuracy(predictions, y)}")
-        
+
     #accuracy = metric.compute()
     print(f"===     The epoch {epoch + 1}/{epochs} has finished training     ===")
     #if debug: print(f"→ Final accuracy of the epoch: {accuracy}")
@@ -81,7 +93,7 @@ def GNLAccuracy(preds, labels) -> float:
         for frame in video:
             letter = alphabet[torch.argmax(frame)]
             if letter != " ": pred_label.append(letter)
-        
+
         for i, c in enumerate(pred_label):
             if c == label[i]:
                 correct += 1
