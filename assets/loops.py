@@ -24,8 +24,6 @@ def train_loop(device, dataloader, model, loss_fn, optimizer, batch_index: int, 
     predictions = torch.zeros((batch_size, 75, 38)).to(device)  #np.ndarray(shape=(batch_size, 75, 38))
     labels = torch.zeros((batch_size, 37)).to(device)  #np.ndarray(shape=(batch_size, 37))
 
-    print(f"Test: {predictions[2]}")
-
     # Get the item from the dataset
     for item, (x, y) in enumerate(dataloader):
         #print(f"{x} -> {x.shape}")
@@ -42,13 +40,13 @@ def train_loop(device, dataloader, model, loss_fn, optimizer, batch_index: int, 
             # if debug: print(video, video.shape, pred, pred.shape, label, label.shape, sep="\n\n========================================================\n\n")
             # total_acc = metric(pred, label)
 
-        if debug: print(f"[DEBUG] Preds: {pred.shape}\n[DEBUG] Label: {label.shape}")
+        # if debug: print(f"[DEBUG] Preds: {pred.shape}\n[DEBUG] Label: {label.shape}")
 
     loss = loss_fn(
-        predictions,
+        predictions.permute(1, 0, 2),
         labels,
-        torch.full(size=(batch_size, 75, 38), fill_value=75, dtype=torch.long),   # torch.Size([32])
-        torch.full(size=(batch_size, 37), fill_value=37, dtype=torch.long)    # torch.Size([32])
+        torch.full(size=(batch_size, ), fill_value=75, dtype=torch.long), # torch.Size([32])
+        torch.full(size=(batch_size, ), fill_value=37, dtype=torch.long)  # torch.Size([32])
     )
 
     # Adjust the weights
@@ -83,7 +81,7 @@ def train_loop(device, dataloader, model, loss_fn, optimizer, batch_index: int, 
     # if debug: print(f"Accuracy of item {item}/{size}: {GNLAccuracy(predictions, y)}")
 
     #accuracy = metric.compute()
-    print(f"===     The batch {epoch + 1}/{epochs} has finished training     ===")
+    print(f"===     The batch {batch_index + 1}/125 has finished training     ===")
     #if debug: print(f"→ Final accuracy of the epoch: {accuracy}")
     #metric.reset()
 

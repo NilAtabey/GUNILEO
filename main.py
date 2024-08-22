@@ -36,23 +36,30 @@ def main():
 
     # Training + Testing
 
-    for epoch_ind in range(epochs):
-        for batch_index in range(125):
-            print(f"[DEBUG] Loading of batch {batch_index}")
-            current_batch = dataset[batch_size*batch_index : batch_size*(batch_index+1)]
-            #print(f"[DEBUG] {type(current_batch), len(current_batch)}\n-> {type(current_batch[0]), len(current_batch[0])}\n-> {current_batch[0][0].shape}")
+    for epoch_ind in range(epochs): # Epochs
+        index = 0
+        for fold in range(5):   # k-fold Cross Validation
+            for batch_index in range(125 // 5):    # 125
+                print(f"[DEBUG] Loading of batch {index + 1} for training (Index: {index})")
+                current_batch = dataset[batch_size*index : batch_size*(index + 1)]
+                #print(f"[DEBUG] {type(current_batch), len(current_batch)}\n-> {type(current_batch[0]), len(current_batch[0])}\n-> {current_batch[0][0].shape}")
 
-            print(f"[DEBUG] Starting training of batch {batch_index}")
-            train_loop(device, current_batch, model, loss_fn, optimizer, batch_index, epochs, epoch_ind, debug=True)
+                print(f"[DEBUG] Starting training of batch {batch_index + 1} (Index: {batch_index})")
+                train_loop(device, current_batch, model, loss_fn, optimizer, index, epochs, epoch_ind, debug=True)
+                index += 1
+            print("===          The training has finished          ===")
+            for batch_index in range(35 // 5):    # 35
+                print(f"[DEBUG] Loading of batch {index + 1} for testing (Index: {index})")
+                current_batch = dataset[batch_size*index : batch_size*(index + 1)]
 
-        for batch_index in range(35):
-            print(f"[DEBUG] Starting testing of batch {batch_index}")
-            current_batch = dataset[batch_size*batch_index : batch_size*(batch_index+1)]
-
-            #test_loop(device, current_batch, model, loss_fn, debug=True)
-
-    print("===          The training has finished          ===")
+                print(f"[DEBUG] Starting testing of batch {index + 1} (Index: {index})")
+                test_loop(device, current_batch, model, loss_fn, debug=True)
+                index += 1
+            print("===          The testing has finished          ===")
+            print(f"===              Finished fold {fold}/5              ===")
+    print("=== === ==> SAVING THE MODEL...<== === ===")
     torch.save(model, "/kaggle/working/gunileo.pt")
+    print("Goodbye, and thank you for all the fish")
 
 
 def dataloader_scrap():
