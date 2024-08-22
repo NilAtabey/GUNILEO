@@ -26,6 +26,7 @@ def main():
     # torchinfo.summary(model, (1,75, 100, 150), col_names = ("input_size", "output_size", "num_params", "kernel_size", "mult_adds"), verbose = 1)
 
     epochs = 2
+    folds = 5
     learning_rate = 10 ** (-4)
     dropout = 0.5
 
@@ -38,8 +39,8 @@ def main():
 
     for epoch_ind in range(epochs): # Epochs
         index = 0
-        for fold in range(5):   # k-fold Cross Validation
-            for batch_index in range(125 // 5):    # 125
+        for fold in range(folds):   # k-fold Cross Validation
+            for batch_index in range(125 // folds):    # 125
                 print(f"[DEBUG] Loading of batch {index + 1} for training (Index: {index})")
                 current_batch = dataset[batch_size*index : batch_size*(index + 1)]
                 #print(f"[DEBUG] {type(current_batch), len(current_batch)}\n-> {type(current_batch[0]), len(current_batch[0])}\n-> {current_batch[0][0].shape}")
@@ -48,7 +49,7 @@ def main():
                 train_loop(device, current_batch, model, loss_fn, optimizer, index, epochs, epoch_ind, debug=True)
                 index += 1
             print("===          The training has finished          ===")
-            for batch_index in range(35 // 5):    # 35
+            for batch_index in range(35 // folds):    # 35
                 print(f"[DEBUG] Loading of batch {index + 1} for testing (Index: {index})")
                 current_batch = dataset[batch_size*index : batch_size*(index + 1)]
 
@@ -56,7 +57,7 @@ def main():
                 test_loop(device, current_batch, model, loss_fn, debug=True)
                 index += 1
             print("===          The testing has finished          ===")
-            print(f"===              Finished fold {fold}/5              ===")
+            print(f"===              Finished fold {fold}/{folds}              ===")
     print("=== === ==> SAVING THE MODEL...<== === ===")
     torch.save(model, "/kaggle/working/gunileo.pt")
     print("Goodbye, and thank you for all the fish")
