@@ -1,11 +1,12 @@
+import numpy as np
 import torchmetrics
 import torch
 from torch import nn
 
 # metric = torchmetrics.Accuracy(task="multiclass", num_classes=38)
-batch_size = 8
+batch_size = 32
 
-def train_loop(device, dataloader, model, loss_fn, optimizer, epochs, epoch=None, debug=True):
+def train_loop(device, dataloader, model, loss_fn, optimizer, batch_index: int, epochs: int, epoch: int, debug: bool=True):
     """Trains an epoch of the model
 
     Parameters:
@@ -14,11 +15,16 @@ def train_loop(device, dataloader, model, loss_fn, optimizer, epochs, epoch=None
         - `model`: the model used
         - `loss_fn`: the loss function of the model
         - `optimizer`: the optimizer
+        - `batch_index`: the number of the currently processed batch
+        - `epochs`: the number of epochs
         - `epoch`: the index of the epoch
+        - `debug`: (default `True`): prints debug info
     """
     size = len(dataloader)
-    predictions = []
-    labels = []
+    predictions = torch.zeros((batch_size, 75, 38)).to(device)  #np.ndarray(shape=(batch_size, 75, 38))
+    labels = torch.zeros((batch_size, 37)).to(device)  #np.ndarray(shape=(batch_size, 37))
+
+    print(f"Test: {predictions[2]}")
 
     # Get the item from the dataset
     for item, (x, y) in enumerate(dataloader):
@@ -30,32 +36,29 @@ def train_loop(device, dataloader, model, loss_fn, optimizer, epochs, epoch=None
 
         # Compute the prediction and the loss
         pred = model(video)
-        predictions.append(pred)
-        labels.append(label)
+        predictions[item] = pred
+        labels[item] = label
 
             # if debug: print(video, video.shape, pred, pred.shape, label, label.shape, sep="\n\n========================================================\n\n")
             # total_acc = metric(pred, label)
 
         if debug: print(f"[DEBUG] Preds: {pred.shape}\n[DEBUG] Label: {label.shape}")
 
+    loss = loss_fn(
+        predictions,
+        labels,
+        torch.full(size=(batch_size, 75, 38), fill_value=75, dtype=torch.long),   # torch.Size([32])
+        torch.full(size=(batch_size, 37), fill_value=37, dtype=torch.long)    # torch.Size([32])
+    )
 
-        loss = loss_fn(
-            pred,
-            label,
-            [75],
-            label.shape
-            #torch.full(size=(1, ), fill_value=75, dtype=torch.long),   # torch.Size([32])
-            #torch.full(size=(1, ), fill_value=37, dtype=torch.long)    # torch.Size([32])
-        )
+    # Adjust the weights
+    # mean_loss = total_loss//batch_size
+    # avg_acc=total_acc//batch_size
+    loss.backward()
+    optimizer.step()
+    optimizer.zero_grad()
 
-        # Adjust the weights
-        # mean_loss = total_loss//batch_size
-        # avg_acc=total_acc//batch_size
-        loss.backward()
-        optimizer.step()
-        optimizer.zero_grad()
-
-        if debug: print(f"→ Loss: {loss} [Item {item + 1}/{size}, Epoch {epoch + 1}/{epochs}]")
+    if debug: print(f"→ Loss: {loss} [Batch {batch_index + 1}/{size}, Epoch {epoch + 1}/{epochs}]")
 
     """predictions = torch.stack(predictions)
     labels = torch.stack(labels)
