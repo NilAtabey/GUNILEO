@@ -3,7 +3,7 @@ import torchmetrics
 import torch
 from torch import nn
 
-# metric = torchmetrics.Accuracy(task="multiclass", num_classes=38)
+metric = torchmetrics.Accuracy(task="multiclass", num_classes=38)
 batch_size = 32
 
 def train_loop(device, dataloader, model, loss_fn, optimizer, batch_index: int, epochs: int, epoch: int, debug: bool=True):
@@ -38,7 +38,8 @@ def train_loop(device, dataloader, model, loss_fn, optimizer, batch_index: int, 
         labels[item] = label
 
             # if debug: print(video, video.shape, pred, pred.shape, label, label.shape, sep="\n\n========================================================\n\n")
-            # total_acc = metric(pred, label)
+        # total_acc = metric(pred.permute(1, 0), label)
+        # print(f"[DEBUG] Accuracy: {total_acc}")
 
         # if debug: print(f"[DEBUG] Preds: {pred.shape}\n[DEBUG] Label: {label.shape}")
 
@@ -109,19 +110,17 @@ def test_loop(device, dataloader, model, loss_fn, debug=True):
 
     # Disable the updating of the weights
     with torch.no_grad():
-        for index, (x, y) in enumerate(dataloader):
-            for index, video in enumerate(x):
-            # Move the data to the device used for testing
-                video = video.to(device)
-                label = y[index].to(device)
+        for item, (x, y) in enumerate(dataloader):
+            # Move data to the device used
+            video = x.to(device)
+            label = y.to(device)
 
-                # Get the model prediction
-                pred = model(video)
+            # Compute the prediction and the loss
+            pred = model(video)
 
-                # Get the accuracy score
-                # acc = metric(pred, label)
-                # if debug: print(f"→ Accuracy for image {index}: {acc}")
-    # acc = metric.compute()
-    print(f"===        The testing loop has finished        ===")
+            # Get the accuracy score
+            acc = metric(pred, label)
+            acc = metric.compute()
+            if debug: print(f"→ Accuracy for image {item}: {acc}")
     # if debug: print(f"→ Final testing accuracy of the model: {acc}")
     # metric.reset()
