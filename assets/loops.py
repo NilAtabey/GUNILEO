@@ -20,6 +20,7 @@ def train_loop(device, dataloader, model, loss_fn, optimizer, batch_index: int, 
         - `epoch`: the index of the epoch
         - `debug`: (default `True`): prints debug info
     """
+    model.train()
     size = len(dataloader)
     predictions = torch.zeros((batch_size, 75, 38)).to(device)  #np.ndarray(shape=(batch_size, 75, 38))
     labels = torch.zeros((batch_size, 37)).to(device)  #np.ndarray(shape=(batch_size, 37))
@@ -53,8 +54,9 @@ def train_loop(device, dataloader, model, loss_fn, optimizer, batch_index: int, 
     # Adjust the weights
     # mean_loss = total_loss//batch_size
     # avg_acc=total_acc//batch_size
-    loss.backward()
     optimizer.step()
+    loss.backward()
+    torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
     optimizer.zero_grad()
 
     if debug: print(f"→ Loss: {loss} [Batch {batch_index + 1}/{size}, Epoch {epoch + 1}/{epochs}]")
@@ -106,6 +108,7 @@ def GNLAccuracy(preds, labels) -> float:
 
 
 def test_loop(device, dataloader, model, loss_fn, debug=True):
+    model.eval()
     size = len(dataloader)
 
     # Disable the updating of the weights
