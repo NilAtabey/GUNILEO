@@ -11,7 +11,7 @@ debug_dl = True
 class GNLDataLoader(Dataset):
     """Creates a dataloader for the Lipsync Project"""
     face_detector = dlib.get_frontal_face_detector()
-    landmark = dlib.shape_predictor("shape_predictor_68_face_landmarks_GTX.dat")
+    landmark = dlib.shape_predictor("/kaggle/input/shape-predictor/shape_predictor_68_face_landmarks_GTX.dat")
 
     alphabet = [x for x in "abcdefghijklmnopqrstuvwxyz0123456789 "]
     encoder = LabelEncoder(alphabet, reserved_labels=['unknown'], unknown_index=0)

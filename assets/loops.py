@@ -3,9 +3,6 @@ import torchmetrics
 import torch
 from torch import nn
 
-metric = torchmetrics.Accuracy(task="multiclass", num_classes=38)
-batch_size = 32
-
 def train_loop(device, dataloader, model, loss_fn, optimizer, batch_index: int, epochs: int, epoch: int, debug: bool=True):
     """Trains an epoch of the model
 
@@ -59,7 +56,7 @@ def train_loop(device, dataloader, model, loss_fn, optimizer, batch_index: int, 
     torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
     optimizer.zero_grad()
 
-    if debug: print(f"→ Loss: {loss} [Batch {batch_index + 1}/{size}, Epoch {epoch + 1}/{epochs}]")
+    if debug: print(f"→ Loss: {loss} [Batch {batch_index + 1}/125, Epoch {epoch + 1}/{epochs}]")
 
     """predictions = torch.stack(predictions)
     labels = torch.stack(labels)
@@ -84,7 +81,7 @@ def train_loop(device, dataloader, model, loss_fn, optimizer, batch_index: int, 
     # if debug: print(f"Accuracy of item {item}/{size}: {GNLAccuracy(predictions, y)}")
 
     #accuracy = metric.compute()
-    print(f"===     The batch {batch_index + 1}/125 has finished training     ===")
+    print(f"===     The batch {batch_index + 1}/160 has finished training     ===")
     #if debug: print(f"→ Final accuracy of the epoch: {accuracy}")
     #metric.reset()
 
@@ -107,7 +104,7 @@ def GNLAccuracy(preds, labels) -> float:
     return total / batch_size
 
 
-def test_loop(device, dataloader, model, loss_fn, debug=True):
+def test_loop(device, dataloader, model, batch_index, loss_fn, debug=True):
     model.eval()
     size = len(dataloader)
 
@@ -120,10 +117,4 @@ def test_loop(device, dataloader, model, loss_fn, debug=True):
 
             # Compute the prediction and the loss
             pred = model(video)
-
-            # Get the accuracy score
-            acc = metric(pred, label)
-            acc = metric.compute()
-            if debug: print(f"→ Accuracy for image {item}: {acc}")
-    # if debug: print(f"→ Final testing accuracy of the model: {acc}")
-    # metric.reset()
+    print(f"===     The batch {batch_index + 1}/160 has finished training     ===")
