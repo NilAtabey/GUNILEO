@@ -1,5 +1,5 @@
 $$
-\Huge G \cup n \; \sqrt{-1} \; \ell \; e \; \emptyset
+\Huge G \cup n \sqrt{-1} \ell e \emptyset
 $$
 <p align="center"><i>A lipsync project, made by Leonardo Biason and Günak Yüzak</i></p>
 
