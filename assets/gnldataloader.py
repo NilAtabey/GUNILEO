@@ -72,13 +72,6 @@ class GNLDataLoader(Dataset):
         for ind, item in enumerate(datas):
             to_return.append((self.__load_video__(item), self.__load_label__(labels[ind])))
 
-
-        '''return (
-            [self.__load_video__(data_piece) for data_piece in datas],
-            [self.__load_label__(label_piece) for label_piece in labels]
-        )'''
-
-        # print(f"{len(to_return)}")
         return tuple(to_return)
 
 
@@ -96,11 +89,8 @@ class GNLDataLoader(Dataset):
         video_path = os.path.join(self.data_path, video_path)
         cap = cv2.VideoCapture(video_path)
         if self.debug:
-            #print(cap.get(cv2.CAP_PROP_FRAME_COUNT))
             print(f"[DEBUG] Trying to open the video at path {video_path}")
         to_return = np.ndarray(shape =(75,100,150))
-
-        # homog, prev_frame = True, None
 
         for i in range(int(cap.get(cv2.CAP_PROP_FRAME_COUNT))):
             _, frame = cap.read()
@@ -118,7 +108,7 @@ class GNLDataLoader(Dataset):
 
             facedetect = self.face_detector(gframe)
 
-            #HAVE A CHECK IF THE FACE IS FOUND OR NOT
+            # HAVE A CHECK IF THE FACE IS FOUND OR NOT
 
             try:
                 face_landmarks = self.landmark(gframe, facedetect[0])
@@ -135,8 +125,6 @@ class GNLDataLoader(Dataset):
                 mouth = (mouth - mean) / std_dev
                 to_return[i] = mouth
             except IndexError:
-                # naughty_boys.add(video_path)
-                # naughty_labels.add("data/matching/labels/" + label_name)
                 to_return[i] = np.zeros((100, 150))
 
         cap.release()

@@ -28,7 +28,7 @@ class LabialCNN(nn.Module):
             nn.Conv3d(in_channels=16, out_channels=32, kernel_size=(3, 5, 5), padding=(1, 2, 2), stride=(1, 1, 1)),
             nn.ReLU(),
             nn.MaxPool3d(kernel_size=(1, 2, 2), stride=(1, 2, 2)),
-             # Left as default, check later if it causes problems
+            # Left as default, check later if it causes problems
             
         )    
         self.gru = nn.Sequential(
@@ -50,8 +50,6 @@ class LabialCNN(nn.Module):
       
         
         if self.debug: print(f"Layer's shape: {sh}")
-        #x = torch.flatten(x, 1)     # Flatten layer
-        #if debug: print(f"  Layer's shape: {x.shape}")
         if self.debug: print(f"Summary of the layer: a")
 
         return x
